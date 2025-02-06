@@ -2,33 +2,42 @@
 
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { useAccount, useWalletClient  } from "wagmi";
+import { useAccount, useWalletClient, useSwitchChain } from "wagmi";
 
 // Import ABI of MovieDAOFactory contract
 import MovieDAOFactoryABI from "../../abis/MovieDAOFactory.json";
 
-const factoryAddress = process.env.NEXT_PUBLIC_FACTORY_CONTRACT || "";
+const factoryAddress = "0x518160f7d75ffd6fd78e7901e6302928a6aa68f3";
 
 const CreateDAOForm = () => {
   const [movieName, setMovieName] = useState("");
   const [daos, setDaos] = useState([]);
   const { address } = useAccount();
-  const { data: walletClient } = useWalletClient();
+  const { data: WalletClient  } = useWalletClient ();
+  const { switchChain } = useSwitchChain(); 
 
   const handleCreateDAO = async () => {
-    if (!walletClient) {
+    if (!WalletClient) {
       alert("Please connect your wallet!");
       return;
     }
 
     try {
-      const factoryContract = new ethers.Contract(factoryAddress, MovieDAOFactoryABI, walletClient);
+      const provider = new ethers.BrowserProvider(WalletClient.transport);
+      const signer = await provider.getSigner(); 
+      const network = await provider.getNetwork();
+      if (network.chainId !== BigInt(84532)) {
+        // Prompt user to switch to Base Sepolia
+        await switchChain?.({ chainId: 84532 }); // Switch to Base Sepolia
+        throw new Error("Please switch to Base Sepolia to continue.");
+      }
+      const factoryContract = new ethers.Contract(factoryAddress, MovieDAOFactoryABI, signer);
       console.log("Creating DAO for movie: ", movieName);   
       const tx = await factoryContract.createMovieDAO(movieName);
       console.log("Transaction : ", tx);
       await tx.wait();
       alert("Movie DAO created successfully!");
-      fetchDAOs(); // Refresh DAO list after creation
+      fetchDAOs(); 
     } catch (error) {
       console.error(error);
       alert("Error creating DAO");
@@ -36,10 +45,17 @@ const CreateDAOForm = () => {
   };
 
   const fetchDAOs = async () => {
-    if (!walletClient) return;
+    if (!WalletClient) return;
 
     try {
-      const factoryContract = new ethers.Contract(factoryAddress, MovieDAOFactoryABI, walletClient);
+      const provider = new ethers.BrowserProvider(WalletClient.transport);
+      const network = await provider.getNetwork();
+      if (network.chainId !== BigInt(84532)) {
+        // Prompt user to switch to Base Sepolia
+        await switchChain?.({ chainId: 84532 }); // Switch to Base Sepolia
+        throw new Error("Please switch to Base Sepolia to continue.");
+      }
+      const factoryContract = new ethers.Contract(factoryAddress, MovieDAOFactoryABI, provider);
       const daoList = await factoryContract.getDAOs();
       console.log("DAOs: ", daoList);
       setDaos(daoList);
@@ -50,8 +66,8 @@ const CreateDAOForm = () => {
   };
 
   useEffect(() => {
-    if (walletClient) fetchDAOs();
-  }, [walletClient]);
+    if (WalletClient) fetchDAOs();
+  }, [WalletClient]);
 
   return (
     <div style={{ padding: "20px" }}>
