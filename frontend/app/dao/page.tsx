@@ -58,12 +58,33 @@ const DAOPage = () => {
   const handleGenerateScript = async () => {
     if (!scriptInput.trim()) return;
     setLoading(true);
-    const signer = await WalletClient.getSigner();
-    await generateScript(scriptInput, daoAddress, signer);
-    setScriptInput("");
-    fetchScript();
+
+    try {
+      const response = await fetch("http://localhost:5000/generate-script", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ movieIdea: scriptInput }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setScript(data.script);
+
+      const signer = await WalletClient.getSigner();
+      await generateScript(scriptInput, daoAddress, signer);
+      fetchScript();
+    } else {
+      console.error("Failed to generate script:", data.error);
+    }
+  } catch (error) {
+    console.error("Error generating script:", error);
+  } finally {
     setLoading(false);
-  };
+    setScriptInput("");
+  }
+};
 
   const handleProposeEdit = async () => {
     if (!scriptInput.trim()) return;
