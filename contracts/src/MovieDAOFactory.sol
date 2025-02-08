@@ -59,6 +59,7 @@ contract MovieDAO is Ownable {
     address[] public members;
     mapping(address => bool) public hasVoted;
     mapping(address => bool) public hasProposed;
+    mapping(address => uint256) public earnings;
 
     uint256 public yesVotes;
     uint256 public noVotes;
@@ -71,6 +72,8 @@ contract MovieDAO is Ownable {
     event VoteCast(address indexed voter, bool approved);
     event VotingEnded(bool accepted);
     event ScriptRewarded(address indexed proposer);
+    event RevenueReceived(uint256 amount);
+    event RevenueDistributed(uint256 amount);
 
     constructor(address creator, string memory _movieName) Ownable(creator) {
         movieName = _movieName;
@@ -88,16 +91,16 @@ contract MovieDAO is Ownable {
 
     // Founder generates the first script
     function generateScript(string memory _cid) external onlyOwner {
-        require(bytes(originalScriptCID).length == 0, "Script already exists");
+        require(bytes(originalScriptCID).length == 0, "It exists");
         originalScriptCID = _cid;
         emit ScriptGenerated(_cid);
     }
 
     // Any DAO member can propose an edit(ONE TIME PER USER)
     function proposeEdit(string memory _cid) external {
-        require(isMember[msg.sender], "Only DAO members can edit");
-        require(!votingActive, "Voting in progress");
-        require(!hasProposed[msg.sender], "You have already proposed a script");
+        require(isMember[msg.sender], "Members only");
+        require(!votingActive, "Going on");
+        require(!hasProposed[msg.sender], "Already done");
 
         proposedScriptCID = _cid;
         scriptProposer = msg.sender;
@@ -112,9 +115,9 @@ contract MovieDAO is Ownable {
 
     // Members vote on the proposed script
     function vote(bool _approve) external {
-        require(isMember[msg.sender], "Only DAO members can vote");
-        require(votingActive, "No active voting");
-        require(!hasVoted[msg.sender], "Already voted");
+        require(isMember[msg.sender], "Members only");
+        require(!votingActive, "Going on");
+        require(!hasProposed[msg.sender], "Already done");
 
         hasVoted[msg.sender] = true;
         if (_approve) {
@@ -127,7 +130,7 @@ contract MovieDAO is Ownable {
 
     // Finalize voting
     function finalizeVoting() external onlyOwner {
-        require(votingActive, "No active voting");
+        require(votingActive, "No Voting");
 
         if (yesVotes > noVotes) {
             originalScriptCID = proposedScriptCID; // Accept edit
@@ -167,5 +170,65 @@ contract MovieDAO is Ownable {
 
     function getMembers() external view returns (address[] memory) {
         return members;
+    }
+
+    // Receive fake revenue (can be called by owner)
+    function receiveRevenue() external payable onlyOwner {
+        require(msg.value > 0, "No revenue sent");
+        emit RevenueReceived(msg.value);
+    }
+
+    // Distribute revenue to NFT holders
+    function distributeRevenue() external onlyOwner {
+        uint256 balance = address(this).balance;
+        require(balance > 0, "No funds to distribute");
+
+        uint256 totalFounderNFTs = founderNFT.totalSupply();
+        uint256 totalScriptNFTs = scriptNFT.totalSupply();
+        uint256 totalMembershipNFTs = membershipNFT.totalSupply();
+
+        uint256 totalNFTs = totalFounderNFTs + totalScriptNFTs + totalMembershipNFTs;
+        require(totalNFTs > 0, "No NFT holders");
+
+        // Define weight distribution
+        uint256 founderShare = (balance * 40) / 100;
+        uint256 scriptShare = (balance * 30) / 100;
+        uint256 membershipShare = (balance * 30) / 100;
+
+        // Distribute to Founder NFT holders
+        if (totalFounderNFTs > 0) {
+            uint256 sharePerFounder = founderShare / totalFounderNFTs;
+            for (uint256 i = 0; i < totalFounderNFTs; i++) {
+                address holder = founderNFT.ownerOf(i);
+                earnings[holder] += sharePerFounder;
+                payable(holder).transfer(sharePerFounder);
+            }
+        }
+
+        // Distribute to Script NFT holders
+        if (totalScriptNFTs > 0) {
+            uint256 sharePerScript = scriptShare / totalScriptNFTs;
+            for (uint256 i = 0; i < totalScriptNFTs; i++) {
+                address holder = scriptNFT.ownerOf(i);
+                earnings[holder] += sharePerScript;
+                payable(holder).transfer(sharePerScript);
+            }
+        }
+
+        // Distribute to Membership NFT holders
+        if (totalMembershipNFTs > 0) {
+            uint256 sharePerMember = membershipShare / totalMembershipNFTs;
+            for (uint256 i = 0; i < totalMembershipNFTs; i++) {
+                address holder = membershipNFT.ownerOf(i);
+                earnings[holder] += sharePerMember;
+                payable(holder).transfer(sharePerMember);
+            }
+        }
+        emit RevenueDistributed(balance);
+    }
+
+    // Get earnings of a user
+    function getEarnings(address user) external view returns (uint256) {
+        return earnings[user];
     }
 }

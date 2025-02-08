@@ -12,6 +12,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.4.3",
+    "@pinata/sdk": "^2.1.0",
     "@rainbow-me/rainbowkit": "^2.2.1",
     "@reown/walletkit": "^1.2.0",
     "@wagmi/core": "^2.16.3",
