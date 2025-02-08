@@ -2,13 +2,13 @@
 pragma solidity ^0.8.0;
 
 import "../lib/forge-std/src/Test.sol";
-import "../src/MovieDAO.sol";
+import "../src/MovieDAOFactory.sol";
 
 contract MovieDAOTest is Test {
-    MovieDAO factory;
+    MovieDAOFactory factory;
 
     function setUp() public {
-        factory = new MovieDAO();
+        factory = new MovieDAOFactory();
     }
 
     function testCreateMovieDAO() public {
@@ -17,7 +17,7 @@ contract MovieDAOTest is Test {
         vm.prank(user);
 
         factory.createMovieDAO("Test Movie");
-        (address creator, address daoAddress, string memory movieName) = factory.daos(0);
+        (address creator, address daoAddress, string memory movieName, address membershipNFT, address founderNFT, address scriptNFT) = factory.daos(0);
         assertEq(movieName, "Test Movie");
         assertEq(creator, user);
     }
