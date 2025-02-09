@@ -6,7 +6,7 @@ from flask_cors import CORS
 
 # Load API key from .env file
 load_dotenv()
-api_key = os.getenv("GOOGLE_GEMINI_API_KEY")
+api_key = "AIzaSyBRf8g2QU-5vZrLSqjOPYfCX4mmUUu9Psk"
 
 # Configure Gemini API
 genai.configure(api_key=api_key)
