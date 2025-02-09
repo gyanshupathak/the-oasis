@@ -2,9 +2,11 @@
 src = "src"
 out = "out"
 optimizer = true
-optimizer-runs = 200
+optimizer-runs = 1
 via_ir = true
 optimize_yul = true
+gas_limit =30000000 
+gas_price = 1000000000 
 libs = ["lib"]
 remappings = [
     "@openzeppelin/=lib/openzeppelin-contracts/"

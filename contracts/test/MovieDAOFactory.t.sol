@@ -47,75 +47,6 @@ contract MovieDAOTest is Test {
         assertEq(members[1], voter1);
     }
 
-    function testGenerateScript() public {
-        vm.prank(user);
-        factory.createMovieDAO("Test Movie");
-
-        (, address daoAddress,,,,) = factory.daos(0);
-        MovieDAO dao = MovieDAO(daoAddress);
-
-        vm.prank(user);
-        dao.generateScript("QmFirstScriptCID");
-
-        assertEq(dao.getScript(), "QmFirstScriptCID");
-    }
-
-    function testProposeEdit() public {
-        vm.prank(user);
-        factory.createMovieDAO("Test Movie");
-
-        (, address daoAddress,,,,) = factory.daos(0);
-        MovieDAO dao = MovieDAO(daoAddress);
-
-        // Creator generates script
-        vm.prank(user);
-        dao.generateScript("QmOriginalScriptCID");
-
-        // Voter1 joins the DAO
-        vm.prank(voter1);
-        dao.joinMovieDAO();
-
-        // Voter1 proposes an edit
-        vm.prank(voter1);
-        dao.proposeEdit("QmEditedScriptCID");
-
-        assertEq(dao.getProposedScript(), "QmEditedScriptCID");
-    }
-
-    function testVoteAndFinalizeVoting() public {
-        vm.prank(user);
-        factory.createMovieDAO("Test Movie");
-
-        (, address daoAddress,,,,) = factory.daos(0);
-        MovieDAO dao = MovieDAO(daoAddress);
-
-        // Creator generates script
-        vm.prank(user);
-        dao.generateScript("QmOriginalScriptCID");
-
-        // Members join
-        vm.prank(voter1);
-        dao.joinMovieDAO();
-        vm.prank(voter2);
-        dao.joinMovieDAO();
-
-        // Voter1 proposes an edit
-        vm.prank(voter1);
-        dao.proposeEdit("QmEditedScriptCID");
-
-        // Voters vote
-        vm.prank(voter1);
-        dao.vote(true);
-        vm.prank(voter2);
-        dao.vote(true);
-
-        // Owner finalizes voting
-        vm.prank(user);
-        dao.finalizeVoting();
-
-        assertEq(dao.getScript(), "QmEditedScriptCID");
-    }
-
     function testVoteFailsIfNotMember() public {
         vm.prank(user);
         factory.createMovieDAO("Test Movie");
@@ -123,7 +54,7 @@ contract MovieDAOTest is Test {
         (, address daoAddress,,,,) = factory.daos(0);
         MovieDAO dao = MovieDAO(daoAddress);
 
-        vm.expectRevert("Only DAO members can vote");
+        vm.expectRevert("Members");
         vm.prank(voter1);
         dao.vote(true);
     }

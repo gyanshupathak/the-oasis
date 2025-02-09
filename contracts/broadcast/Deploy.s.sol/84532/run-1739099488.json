@@ -1,7 +1,7 @@
 {
   "transactions": [
     {
-      "hash": "0xbc7ea361c0ac2f1c7b9ca86141abfbd21279b182b284c27892c5917c742aa694",
+      "hash": null,
       "transactionType": "CREATE",
       "contractName": "MovieDAOFactory",
       "contractAddress": "0x59670aa530c2b176886984509e36e2ed31ce1b8b",
@@ -19,50 +19,11 @@
       "isFixedGasLimit": false
     }
   ],
-  "receipts": [
-    {
-      "status": "0x1",
-      "cumulativeGasUsed": "0x9a474c",
-      "logs": [
-        {
-          "address": "0x59670aa530c2b176886984509e36e2ed31ce1b8b",
-          "topics": [
-            "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
-            "0x0000000000000000000000000000000000000000000000000000000000000000",
-            "0x00000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c8"
-          ],
-          "data": "0x",
-          "blockHash": "0x70644f3f824d87dbcb47270bcf72a47ce49f13a48ad0974784a28cdb27c47f07",
-          "blockNumber": "0x14a98ca",
-          "transactionHash": "0xbc7ea361c0ac2f1c7b9ca86141abfbd21279b182b284c27892c5917c742aa694",
-          "transactionIndex": "0x21",
-          "logIndex": "0x62",
-          "removed": false
-        }
-      ],
-      "logsBloom": "0x00000000000000000002000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000001000000000000000000200000000000000800020000000000000000000800000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000001000000000000020000000000000000",
-      "type": "0x2",
-      "transactionHash": "0xbc7ea361c0ac2f1c7b9ca86141abfbd21279b182b284c27892c5917c742aa694",
-      "transactionIndex": "0x21",
-      "blockHash": "0x70644f3f824d87dbcb47270bcf72a47ce49f13a48ad0974784a28cdb27c47f07",
-      "blockNumber": "0x14a98ca",
-      "gasUsed": "0x50e2ff",
-      "effectiveGasPrice": "0xd83ab",
-      "from": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
-      "to": null,
-      "contractAddress": "0x59670aa530c2b176886984509e36e2ed31ce1b8b",
-      "l1BaseFeeScalar": "0x44d",
-      "l1BlobBaseFee": "0x1",
-      "l1BlobBaseFeeScalar": "0xa118b",
-      "l1Fee": "0xcc9207eca3",
-      "l1GasPrice": "0x12029a1e1",
-      "l1GasUsed": "0x284ca"
-    }
-  ],
+  "receipts": [],
   "libraries": [],
   "pending": [],
   "returns": {},
-  "timestamp": 1739100277,
+  "timestamp": 1739099488,
   "chain": 84532,
   "commit": "2084c89"
 }
