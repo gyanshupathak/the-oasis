@@ -19,7 +19,8 @@ import json
 
 # contract_address = "0x59670aa530c2b176886984509e36e2ed31ce1b8b"
 # movieDAOContract = w3.eth.contract(address=contract_address, abi=contract_abi)
-
+# private_key = os.getenv("PRIVATE_KEY") 
+ 
 # Load API key from .env file
 load_dotenv()
 api_key = os.getenv("GOOGLE_GEMINI_API_KEY")  # Store API key securely in .env file
@@ -130,7 +131,7 @@ def get_signer(ipfs_hash):
 #         })
 
 #         # Sign transaction
-#         signed_tx = w3.eth.account.sign_transaction(tx, private_key="0xYourPrivateKey")
+#         signed_tx = w3.eth.account.sign_transaction(tx, private_key="private_key")
         
 #         # Send transaction
 #         tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
