@@ -6,18 +6,19 @@ import { useAccount, useWalletClient } from "wagmi";
 import MovieDAOABI from "../../abis/MovieDAO.json";
 import { useSearchParams } from "next/navigation";
 import { PinataSDK } from "pinata-web3";
+import { useRouter } from "next/navigation";
 
 const pinata = new PinataSDK({
-  pinataJwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIzMjBiODU0ZS0wOTVkLTRhNDctYjFlYy01YjEyZTE3MjM1YTIiLCJlbWFpbCI6InBhdGhha2d5YW5zaHVAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjEsImlkIjoiRlJBMSJ9LHsiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjEsImlkIjoiTllDMSJ9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZSwic3RhdHVzIjoiQUNUSVZFIn0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6ImM1NDc1MDg5MWUzZTU2MWJmZGE2Iiwic2NvcGVkS2V5U2VjcmV0IjoiMDk1MGYwMDVjODgxY2QxZmFhNTUwMDIyMTJlYmM1ZTgzNmZmYjQ1NzAxZDk5MWMwM2FhYjAzMjM3MjcxZjU2MSIsImV4cCI6MTc3MDU4MzQxMn0.jGrYTNPyhLN1iqlMzHZ3Dn7BARXsG7vKB8XJUC-eTlo",
-  pinataGateway: "scarlet-fantastic-marmot-419.mypinata.cloud",
+  pinataJwt: process.env.NEXT_PUBLIC_PINATA_JWT,
+  pinataGateway: process.env.NEXT_PUBLIC_PINATA_GATEWAY,
 });
-import { vote, finalizeVote } from "@/utils/contracts";
 
 const DAOPage = () => {
   const searchParams = useSearchParams();
   const daoAddress = searchParams.get("daoAddress");
   const { data: WalletClient } = useWalletClient();
   const { address } = useAccount();
+  const router = useRouter();
 
   const [members, setMembers] = useState([]);
   const [script, setScript] = useState();
@@ -158,23 +159,21 @@ const DAOPage = () => {
   }
   };
 
-  // const handleProposeEdit = async () => {
-  //   if (!scriptInput.trim()) return;
-  //   const signer = await WalletClient.getSigner();
-  //   await proposeEdit(scriptInput, daoAddress, signer);
-  //   setScriptInput("");
-  // };
-
   const handleVote = async (approve) => {
-    const signer = await WalletClient.getSigner();
-    await vote(daoAddress, approve, signer);
+    const provider = new ethers.BrowserProvider(WalletClient.transport);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(daoAddress, MovieDAOABI, signer);
+    await contract.vote(approve);
   };
 
-  // const handleFinalizeVote = async () => {
-  //   const signer = await WalletClient.getSigner();
-  //   await finalizeVote(daoAddress, signer);
-  //   fetchScript();
-  // };
+  const handleFinalizeVote = async () => {
+    const provider = new ethers.BrowserProvider(WalletClient.transport);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(daoAddress, MovieDAOABI, signer);
+    await contract.finalizeVoting(ProposalSigner);
+    fetchScript();
+    router.push(`/create-video`);
+  };
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center p-6">

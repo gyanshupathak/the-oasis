@@ -98,19 +98,20 @@ contract MovieDAO is Ownable {
     }
 
     // Finalize voting
-    function finalizeVoting() external onlyOwner {
+    function finalizeVoting(address _scriptProposer) external onlyOwner { 
 
         if (yesVotes > noVotes) {
-            scriptNFT.mint(scriptProposer);
-            emit ScriptRewarded(scriptProposer);
+            scriptNFT.mint(_scriptProposer);
+            emit ScriptRewarded(_scriptProposer);
             emit VotingEnded(true);
         } else {
             emit VotingEnded(false);
         }
 
         // Reset voting
-        scriptProposer = address(0);
         votingActive = false;
+        yesVotes = 0;
+        noVotes = 0;
 
         // Reset votes for all members
         for (uint256 i = 0; i < members.length; i++) {

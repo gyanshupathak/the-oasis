@@ -8,7 +8,7 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 const config = getDefaultConfig({
   appName: 'The Oasis',
-  projectId: '9d628ef11571314fe46f64250f60e9d9',
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
   chains: [mainnet, polygon, optimism, arbitrum, base , baseSepolia],
   ssr: true, // If your dApp uses server side rendering (SSR)
 });

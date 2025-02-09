@@ -68,6 +68,6 @@ contract MovieDAOTest is Test {
 
         vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, voter1));
         vm.prank(voter1);
-        dao.finalizeVoting();
+        dao.finalizeVoting(user);
     }
 }

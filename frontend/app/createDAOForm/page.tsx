@@ -10,7 +10,7 @@ import MovieDAOFactoryABI from "../../abis/MovieDAOFactory.json";
 import MovieDAOABI from "../../abis/MovieDAO.json";
 import Link from "next/link";
 
-const factoryAddress = "0x2bc044f4b08c4d487c7af465cbfb137e750f98ca";
+const factoryAddress = "0xf83d5c4cfc7d63afe0b69c2ead699c003b668901";
 
 const CreateDAOForm = () => {
   const [movieName, setMovieName] = useState("");
@@ -88,27 +88,11 @@ const CreateDAOForm = () => {
       alert("Joined DAO successfully!");
       setJoining(false);
       router.push(`/dao?daoAddress=${daoAddress}`);
-      // const membersList = await daoContract.getMembers();
-      // setMembers(membersList);
     } catch (error) {
       console.error(error);
       alert("Error joining DAO");
     }
   };
-
-  // const handleMovieDAO = async (daoAddress) => {
-  //   if (!WalletClient) return;
-  //   router.push(`/dao/${daoAddress}`);
-  //   // try {
-  //   //   const provider = new ethers.BrowserProvider(WalletClient.transport);
-  //   //   const daoContract = new ethers.Contract(daoAddress, MovieDAOABI, provider);
-  //   //   const membersList = await daoContract.getMembers();
-  //   //   setMembers(membersList);
-  //   // } catch (error) {
-  //   //   console.error(error);
-  //   //   alert("Error fetching members");
-  //   // }
-  // };
 
   useEffect(() => {
     if (WalletClient) fetchDAOs();
@@ -153,10 +137,6 @@ const CreateDAOForm = () => {
                     </button>
                   </Link>
                 ) : (
-                  // <Link href={`/dao?daoAddress=${dao.daoAddress}`} onClick={(e) => {
-                  //     e.preventDefault(); // Prevent instant navigation
-                  //     handleJoinDAO(dao.daoAddress);
-                  //   }}>
                     <button
                       className="py-2 px-4 text-black rounded-lg font-bold transition duration-300 bg-yellow-400 hover:bg-yellow-600"
                       disabled={joining} // Disable button while joining
@@ -164,16 +144,7 @@ const CreateDAOForm = () => {
                     >
                       {joining ? "Joining..." : "Join"}
                     </button>
-                  // </Link>
                 )}
-
-                {/* <Link href={`/dao?daoAddress=${dao.daoAddress}`}>
-                <button
-                  className={`py-2 px-4 text-black rounded-lg font-bold transition duration-300 bg-yellow-400 hover:bg-yellow-600`}
-                >
-                  {address === dao.creator ? "Open" : "Join"}
-                </button>
-                </Link> */}
               </li>
             ))
           )}
